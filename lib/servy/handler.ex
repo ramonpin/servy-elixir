@@ -4,7 +4,8 @@ defmodule Servy.Handler do
   
   @pages_path Path.expand("../../pages", __DIR__)
 
-  require Logger
+  import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
+  import Servy.Parser, only: [parse: 1]
 
   @doc "Transforms the request into a response"
   def handle(request) do
@@ -16,45 +17,6 @@ defmodule Servy.Handler do
     |> track
     |> format_response
   end
-
-  @doc "Logs actual state of the conversantion."
-  def log(conv) do 
-    Logger.info inspect(conv)
-    conv
-  end
-
-  @doc "Parses the request into a conversantion map."
-  def parse(request) do
-    [method, path, _] = 
-      request 
-      |> String.split("\n") 
-      |> List.first
-      |> String.split(" ")
-
-    %{ method: method, 
-       path: path,
-       resp_body: "",
-       status: nil
-     }
-  end
-
-  @doc "Logs 404 requests."
-  def track(%{status: 404, path: path} = conv) do
-    Logger.warn "The path #{path} does not exists."
-    conv
-  end
-
-  def track(conv), do: conv
-
-  def rewrite_path(%{path: "/wildlife"} = conv) do
-    %{ conv | path: "/wildthings"}
-  end
-
-  def rewrite_path(%{path: "/bears?id=" <> id} = conv) do
-    %{ conv | path: "/bears/#{id}"}
-  end
-
-  def rewrite_path(conv), do: conv
 
   def route(%{method: "GET", path: "/wildthings"} = conv) do
     %{ conv | resp_body: "Bears, Lions, Tigers", status: 200 }
