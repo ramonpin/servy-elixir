@@ -39,27 +39,23 @@ defmodule Servy.Handler do
 
   def rewrite_path(conv), do: conv
 
-  def route(conv) do
-    route(conv, conv.method, conv.path)
-  end
-
-  def route(conv, "GET", "/wildthings") do
+  def route(%{method: "GET", path: "/wildthings"} = conv) do
     %{ conv | resp_body: "Bears, Lions, Tigers", status: 200 }
   end
 
-  def route(conv, "GET", "/bears") do
+  def route(%{method: "GET", path: "/bears"} = conv) do
     %{ conv | resp_body: "Teddy, Paddington, Smokey", status: 200 }
   end
 
-  def route(conv, "GET", "/bears/" <> id) do
+  def route(%{method: "GET", path: "/bears/" <> id} = conv) do
     %{ conv | resp_body: "Bear #{id}", status: 200 }
   end
 
-  def route(conv, "DELETE", "/bears/" <> _id) do
+  def route(%{method: "DELETE", path: "/bears/" <> _id} = conv) do
     %{ conv | resp_body: "Is forbidden to delete bears", status: 403 }
   end
 
-  def route(conv, _method, path) do
+  def route(%{path: path} = conv) do
     %{ conv | resp_body: "No #{path} here", status: 404 }
   end
 
