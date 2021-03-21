@@ -56,6 +56,12 @@ defmodule Servy.Handler do
     %{ conv | resp_body: "Teddy, Paddington, Smokey", status: 200 }
   end
 
+  def route(%{method: "GET", path: "/bears/new"} = conv) do
+    Path.expand("../../pages", __DIR__)
+    |> Path.join("form.html")
+    |> handle_file(conv)
+  end
+
   def route(%{method: "GET", path: "/bears/" <> id} = conv) do
     %{ conv | resp_body: "Bear #{id}", status: 200 }
   end
@@ -65,20 +71,15 @@ defmodule Servy.Handler do
   end
 
   def route(%{method: "GET", path: "/about"} = conv) do
-    file = 
-      Path.expand("../../pages", __DIR__)
-      |> Path.join("about.html")
+    Path.expand("../../pages", __DIR__)
+    |> Path.join("about.html")
+    |> handle_file(conv)
+  end
 
-    case File.read(file) do
-      {:ok, content} ->
-        %{ conv | resp_body: content, status: 200 }
-
-      {:error, :enoent} ->
-        %{ conv | resp_body: "File not found!!", status: 404 }
-
-      {:error, reason} ->
-        %{ conv | resp_body: "Error #{reason}", status: 500 }
-    end
+  def route(%{method: "GET", path: "/pages/" <> page} = conv) do
+    Path.expand("../../pages", __DIR__)
+    |> Path.join("#{page}.html")
+    |> handle_file(conv)
   end
 
   def route(%{path: path} = conv) do
@@ -94,6 +95,19 @@ defmodule Servy.Handler do
     
     #{conv.resp_body}
     """
+  end
+
+  defp handle_file(file, conv) do
+    case File.read(file) do
+      {:ok, content} ->
+        %{ conv | resp_body: content, status: 200 }
+
+      {:error, :enoent} ->
+        %{ conv | resp_body: "File not found!!", status: 404 }
+
+      {:error, reason} ->
+        %{ conv | resp_body: "Error #{reason}", status: 500 }
+    end
   end
 
   defp status_reason(code) do
@@ -204,4 +218,28 @@ Accept: */*
 response = Servy.Handler.handle(request)
 
 IO.puts response
-1
+
+request = """
+GET /bears/new HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
+request = """
+GET /pages/about HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
