@@ -1,7 +1,10 @@
 defmodule Servy.Handler do
 
+  @moduledoc "Handles HTTP requests,"
+
   require Logger
 
+  @doc "Transforms the request into a response"
   def handle(request) do
     request
     |> parse
@@ -12,11 +15,13 @@ defmodule Servy.Handler do
     |> format_response
   end
 
+  @doc "Logs actual state of the conversantion."
   def log(conv) do 
     Logger.info inspect(conv)
     conv
   end
 
+  @doc "Parses the request into a conversantion map."
   def parse(request) do
     [method, path, _] = 
       request 
@@ -31,6 +36,7 @@ defmodule Servy.Handler do
      }
   end
 
+  @doc "Logs 404 requests."
   def track(%{status: 404, path: path} = conv) do
     Logger.warn "The path #{path} does not exists."
     conv
