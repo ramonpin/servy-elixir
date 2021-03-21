@@ -3,8 +3,10 @@ defmodule Servy.Handler do
   def handle(request) do
     request
     |> parse
+    |> rewrite_path
     |> log
     |> route
+    |> track
     |> format_response
   end
 
@@ -24,6 +26,19 @@ defmodule Servy.Handler do
      }
   end
 
+  def track(%{status: 404, path: path} = conv) do
+    IO.puts "Warning: The path #{path} does not exists."
+    conv
+  end
+
+  def track(conv), do: conv
+
+  def rewrite_path(%{path: "/wildlife"} = conv) do
+    %{ conv | path: "/wildthings"}
+  end
+
+  def rewrite_path(conv), do: conv
+
   def route(conv) do
     route(conv, conv.method, conv.path)
   end
@@ -40,7 +55,7 @@ defmodule Servy.Handler do
     %{ conv | resp_body: "Bear #{id}", status: 200 }
   end
 
-  def route(conv, "DELETE", "/bears/" <> id) do
+  def route(conv, "DELETE", "/bears/" <> _id) do
     %{ conv | resp_body: "Is forbidden to delete bears", status: 403 }
   end
 
@@ -122,6 +137,18 @@ IO.puts response
 
 request = """
 DELETE /bears/1 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts response
+
+request = """
+GET /wildlife HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
