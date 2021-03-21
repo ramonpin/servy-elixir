@@ -1,5 +1,7 @@
 defmodule Servy.Handler do
 
+  require Logger
+
   def handle(request) do
     request
     |> parse
@@ -10,7 +12,10 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def log(conv), do: IO.inspect conv
+  def log(conv) do 
+    Logger.info inspect(conv)
+    conv
+  end
 
   def parse(request) do
     [method, path, _] = 
@@ -27,7 +32,7 @@ defmodule Servy.Handler do
   end
 
   def track(%{status: 404, path: path} = conv) do
-    IO.puts "Warning: The path #{path} does not exists."
+    Logger.warn "The path #{path} does not exists."
     conv
   end
 
