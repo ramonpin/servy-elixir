@@ -19,20 +19,6 @@ defmodule Servy.Parser do
     }
   end
 
-#   def parse_headers([head | tail], headers) do
-#     [key, value] = String.split(head, ": ")
-#     headers = Map.put(headers, key, value)
-#     parse_headers(tail, headers)
-#   end
-#
-#   def parse_headers([], headers), do: headers
-
-#   def parse_headers(headers) do
-#     headers
-#     |> Enum.map(&String.split(&1, ": "))
-#     |> Enum.reduce(%{}, &Map.put(&2, hd(&1), hd(tl(&1))))
-#   end
-
   def parse_headers(headers) do
     Enum.reduce(headers, %{}, fn(header, headers_map) ->
       [key, value] = String.split(header, ": ")
