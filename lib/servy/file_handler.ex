@@ -1,6 +1,8 @@
 defmodule Servy.FileHandler do
 
-  def handle_file(file, conv) do
+  alias Servy.Conv
+
+  def handle_file(file, %Conv{} = conv) do
     case File.read(file) do
       {:ok, content} ->
         %{ conv | resp_body: content, status: 200 }
