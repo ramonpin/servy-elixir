@@ -4,5 +4,3 @@ defmodule Servy do
   end
 end
 
-# IO.puts Servy.howdy("Ramon") 
-
