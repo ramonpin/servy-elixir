@@ -6,13 +6,17 @@ defmodule Servy.Plugins do
 
   @doc "Logs actual state of the conversantion."
   def log(%Conv{} = conv) do
-    Logger.info inspect(conv)
+    if Mix.env == :dev do
+      Logger.info inspect(conv)
+    end
     conv
   end
 
   @doc "Logs 404 requests."
   def track(%Conv{status: 404, path: path} = conv) do
-    Logger.warn "The path #{path} does not exists."
+    if Mix.env != :test do
+      Logger.warn "The path #{path} does not exists."
+    end
     conv
   end
 
