@@ -4,8 +4,8 @@ defmodule Servy.Parser do
 
   @doc "Parses the request into a conversantion map."
   def parse(request) do
-    [top, param_string] = String.split(request, "\n\n")
-    [request_line | header_lines] = String.split(top, "\n")
+    [top, param_string] = String.split(request, "\r\n\r\n")
+    [request_line | header_lines] = String.split(top, "\r\n")
     [method, path, _] = String.split(request_line, " ")
     # headers = parse_headers(header_lines, %{})
     headers = parse_headers(header_lines)

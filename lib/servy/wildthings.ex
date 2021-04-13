@@ -10,7 +10,7 @@ defmodule Servy.Wildthings do
       %Bear{id: 5, name: "Snow", type: "Polar"},
       %Bear{id: 6, name: "Brutus", type: "Grizzly"},
       %Bear{id: 7, name: "Rosie", type: "Black", hibernating: true},
-      %Bear{id: 8, name: "Rosco", type: "Panda"},
+      %Bear{id: 8, name: "Roscoe", type: "Panda"},
       %Bear{id: 9, name: "Iceman", type: "Polar", hibernating: true},
       %Bear{id: 10, name: "Kenai", type: "Grizzly"},
     ]
