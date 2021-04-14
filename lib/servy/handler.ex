@@ -55,6 +55,10 @@ defmodule Servy.Handler do
     BearController.create(conv, conv.params)
   end
 
+  def route(%Conv{method: "POST", path: "/api/bears"} = conv) do
+    Api.BearController.create(conv, conv.params)
+  end
+
   def route(%Conv{method: "GET", path: "/about"} = conv) do
     @pages_path
     |> Path.join("about.html")
@@ -70,7 +74,6 @@ defmodule Servy.Handler do
   def route(%Conv{path: path} = conv) do
     %{ conv | resp_body: "No #{path} here!", status: 404 }
   end
-
 
   def format_response(%Conv{} = conv) do
     """
