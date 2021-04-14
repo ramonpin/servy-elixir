@@ -10,7 +10,7 @@ defmodule Servy.Handler do
 
   import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
   import Servy.Parser, only: [parse: 1]
-  import Servy.FileHandler, only: [handle_file: 2]
+  import Servy.FileHandler, only: [handle_file: 2, handle_markdown: 2]
 
   @doc "Transforms the request into a response"
   def handle(request) do
@@ -64,6 +64,12 @@ defmodule Servy.Handler do
     @pages_path
     |> Path.join("about.html")
     |> handle_file(conv)
+  end
+
+  def route(%Conv{method: "GET", path: "/faq"} = conv) do
+    @pages_path
+    |> Path.join("faq.md")
+    |> handle_markdown(conv)
   end
 
   def route(%Conv{method: "GET", path: "/pages/" <> page} = conv) do

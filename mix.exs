@@ -22,6 +22,7 @@ defmodule Servy.MixProject do
   defp deps do
     [
       {:poison, "~> 4.0"},
+      {:earmark, "< 1.4.14"},
     ]
   end
 end

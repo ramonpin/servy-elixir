@@ -10,5 +10,13 @@ defmodule Servy.View do
     %{ conv | resp_body: content, status: status }
   end
 
+  def render_markdown(conv, status, template, bindings \\ []) do
+    content = @templates_path
+    |> Path.join(template)
+    |> EEx.eval_file(bindings)
+
+    %{ conv | resp_body: content, status: status }
+  end
+
 end
 
