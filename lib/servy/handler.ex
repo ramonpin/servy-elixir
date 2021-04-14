@@ -29,6 +29,10 @@ defmodule Servy.Handler do
     %{ conv | resp_body: "Awake!", status: 200 }
   end
 
+  def route(%Conv{method: "GET", path: "/kaboom"} = _conv) do
+    raise "Kaboom!"
+  end
+
   def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
     %{ conv | resp_body: "Bears, Lions, Tigers", status: 200 }
   end
