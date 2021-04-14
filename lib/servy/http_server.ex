@@ -22,7 +22,7 @@ defmodule Servy.HttpServer do
     {:ok, client_socket} = :gen_tcp.accept(listen_socket)
 
     Logger.info "Connection accepted!"
-    serve(client_socket)
+    spawn(__MODULE__, :serve, [client_socket])
 
     accept_loop(listen_socket)
   end
