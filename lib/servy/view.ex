@@ -14,6 +14,7 @@ defmodule Servy.View do
     content = @templates_path
     |> Path.join(template)
     |> EEx.eval_file(bindings)
+    |> Earmark.as_html!
 
     %{ conv | resp_body: content, status: status }
   end

@@ -2,30 +2,19 @@ defmodule HttpServerTest do
   use ExUnit.Case
 
   alias Servy.HttpServer
-  alias Servy.HttpClient
 
   test "check our server replies to requests" do
-    request = """
-    POST /api/bears HTTP/1.1\r
-    Host: example.com\r
-    User-Agent: ExampleBrowser/1.0\r
-    Accept: */*\r
-    Content-Type: application/json\r
-    Content-Length: 41\r
-    \r
-    {"name": "Baloo", "type": "Grizzly Pale"}
-    """
-
-    response = """
-    HTTP/1.1 201 Created\r
-    Content-Type: application/json\r
-    Content-Length: 51\r
-    \r
-    {"msg": "Created a Grizzly Pale bear named Baloo!"}
-    """
-
+    # Start our HttpServer
     pid = spawn(HttpServer, :start, [4000])
-    assert response == HttpClient.send('localhost', 4000, request)
+
+    request_body = ~s({"name": "Baloo", "type": "Grizzly Pale"})
+    response_body = ~s({"msg": "Created a Grizzly Pale bear named Baloo!"})
+
+    {:ok, response} = HTTPoison.post("http://localhost:4000/api/bears", request_body, [{"Content-Type", "application/json"}])
+    assert response.status_code == 201
+    assert response.body == response_body
+
+    # End our HttpServer
     Process.exit(pid, "End Test")
   end
 

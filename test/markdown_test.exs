@@ -23,7 +23,7 @@ defmodule MarkdownTest do
       <li>
       <p><strong>Can you just show me some code?</strong></p>
       <p>Sure! Here’s some Elixir:</p>
-      <pre><code class="elixir">[&quot;Bigfoot&quot;, &quot;Yeti&quot;, &quot;Sasquatch&quot;] |&gt; Enum.random()</code></pre>
+      <pre><code class="elixir">["Bigfoot", "Yeti", "Sasquatch"] |> Enum.random()</code></pre>
       </li>
     </ul>
     """
