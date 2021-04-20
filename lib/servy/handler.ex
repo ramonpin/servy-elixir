@@ -7,7 +7,6 @@ defmodule Servy.Handler do
   alias Servy.Conv
   alias Servy.BearController
   alias Servy.Api
-  alias Servy.Fetcher
 
   import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
   import Servy.Parser, only: [parse: 1]
@@ -32,7 +31,7 @@ defmodule Servy.Handler do
       fn -> Servy.VideoCam.get_snapshot("cam-2") end,
       fn -> Servy.VideoCam.get_snapshot("cam-3") end,
       fn -> Servy.Tracker.get_location("bigfoot") end,
-    ] |> Enum.map(&Fetcher.async/1) |> Enum.map(&Fetcher.await/1)
+    ] |> Enum.map(&Task.async/1) |> Enum.map(&Task.await/1)
 
     # Result
     sensors =  inspect {[snapshot1, snapshot2, snapshot3], where_is_bigfoot}
