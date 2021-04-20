@@ -3,32 +3,26 @@ defmodule HttpServerTest do
 
   alias Servy.HttpServer
 
-  defp send_request(parent, request_body) do
-    spawn fn -> send(parent, HTTPoison.post(
-      "http://localhost:4000/api/bears",
-      request_body,
-      [{"Content-Type", "application/json"}]
-    ))
-    end
+  defp assert_correct_response(response, response_body) do
+    assert response.status_code == 201
+    assert response.body == response_body
   end
 
   test "check our server replies to requests" do
     # Start our HttpServer
     pid = spawn(HttpServer, :start, [4000])
 
+    headers = [{"Content-Type", "application/json"}]
     request_body = ~s({"name": "Baloo", "type": "Grizzly Pale"})
+    request = ["http://localhost:4000/api/bears", request_body, headers]
+
     response_body = ~s({"msg": "Created a Grizzly Pale bear named Baloo!"})
 
-    Enum.each(1..5, fn _ ->
-      send_request(self(), request_body)
-    end)
-
-    Enum.each(1..5, fn _ -> receive do
-      {:ok, response} ->
-        assert response.status_code == 201
-        assert response.body == response_body
-      end
-    end)
+    # Concurrent calls to the server
+    1..5
+    |> Enum.map(fn _ -> Task.async(HTTPoison, :post!, request) end)
+    |> Enum.map(&Task.await/1)
+    |> Enum.each(&assert_correct_response(&1, response_body))
 
     # End our HttpServer
     Process.exit(pid, "End Test")
