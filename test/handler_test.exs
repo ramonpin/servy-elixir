@@ -257,6 +257,26 @@ defmodule HandlerTest do
     assert expected_response == response
   end
 
+  test "sensors" do
+    request = """
+    GET /sensors HTTP/1.1\r
+    Host: example.com\r
+    User-Agent: ExampleBrowser/1.0\r
+    Accept: */*\r
+    \r
+    """
+
+    response = """
+    HTTP/1.1 200 OK\r
+    Content-Type: text/html\r
+    Content-Length: 107\r
+    \r
+    {["cam-1-snapshot.jpg", "cam-2-snapshot.jpg", "cam-3-snapshot.jpg"], %{lat: "29.0469 N", lng: "98.8667 W"}}
+    """
+
+    assert handle(request) == response
+  end
+
   defp remove_whitespace(text) do
     String.replace(text, ~r{\s}, "")
   end

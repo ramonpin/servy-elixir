@@ -7,7 +7,7 @@ defmodule Servy.Handler do
   alias Servy.Conv
   alias Servy.BearController
   alias Servy.Api
-  alias Servy.VideoCam
+  alias Servy.Fetcher
 
   import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
   import Servy.Parser, only: [parse: 1]
@@ -25,22 +25,23 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def route(%Conv{method: "GET", path: "/snapshots"} = conv) do
-    # The routes run on their own process spawned by the HttpServer module
-    parent = self()
-
+  def route(%Conv{method: "GET", path: "/sensors"} = conv) do
     # Launch the three snapshots each in their own process
-    spawn fn -> send(parent, {:result, VideoCam.get_snapshot("cam-1")}) end
-    spawn fn -> send(parent, {:result, VideoCam.get_snapshot("cam-2")}) end
-    spawn fn -> send(parent, {:result, VideoCam.get_snapshot("cam-3")}) end
+    snp1 = Fetcher.async(fn -> Servy.VideoCam.get_snapshot("cam-1") end)
+    snp2 = Fetcher.async(fn -> Servy.VideoCam.get_snapshot("cam-2") end)
+    snp3 = Fetcher.async(fn -> Servy.VideoCam.get_snapshot("cam-3") end)
+    bgft = Fetcher.async(fn -> Servy.Tracker.get_location("bigfoot") end)
 
-    # Receive the messages
-    snapshot1 = receive do {:result, snapshot} -> snapshot end
-    snapshot2 = receive do {:result, snapshot} -> snapshot end
-    snapshot3 = receive do {:result, snapshot} -> snapshot end
-    snapshots = [snapshot1, snapshot2, snapshot3]
+    # Await results
+    snapshot1 = Fetcher.await(snp1)
+    snapshot2 = Fetcher.await(snp2)
+    snapshot3 = Fetcher.await(snp3)
+    where_is_bigfoot   = Fetcher.await(bgft)
 
-    %{ conv | status: 200, resp_body: inspect snapshots }
+    # Result
+    sensors =  inspect {[snapshot1, snapshot2, snapshot3], where_is_bigfoot}
+
+    %{ conv | status: 200, resp_body: sensors }
   end
 
   def route(%Conv{method: "GET", path: "/hibernate/" <> time} = conv) do
