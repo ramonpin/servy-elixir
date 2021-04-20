@@ -4,9 +4,11 @@ defmodule Servy.Handler do
 
   @pages_path Path.expand("pages", File.cwd!)
 
-  alias Servy.Conv
-  alias Servy.BearController
   alias Servy.Api
+  alias Servy.Conv
+
+  alias Servy.BearController
+  alias Servy.PledgeController
 
   import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
   import Servy.Parser, only: [parse: 1]
@@ -22,6 +24,14 @@ defmodule Servy.Handler do
     |> track
     |> put_content_length
     |> format_response
+  end
+
+  def route(%Conv{method: "POST", path: "/pledges"} = conv) do
+    PledgeController.create(conv, conv.params)
+  end
+
+  def route(%Conv{method: "GET", path: "/pledges"} = conv) do
+    PledgeController.index(conv)
   end
 
   def route(%Conv{method: "GET", path: "/sensors"} = conv) do
