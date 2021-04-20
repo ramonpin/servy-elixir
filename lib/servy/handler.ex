@@ -27,16 +27,12 @@ defmodule Servy.Handler do
 
   def route(%Conv{method: "GET", path: "/sensors"} = conv) do
     # Launch the three snapshots each in their own process
-    snp1 = Fetcher.async(fn -> Servy.VideoCam.get_snapshot("cam-1") end)
-    snp2 = Fetcher.async(fn -> Servy.VideoCam.get_snapshot("cam-2") end)
-    snp3 = Fetcher.async(fn -> Servy.VideoCam.get_snapshot("cam-3") end)
-    bgft = Fetcher.async(fn -> Servy.Tracker.get_location("bigfoot") end)
-
-    # Await results
-    snapshot1 = Fetcher.await(snp1)
-    snapshot2 = Fetcher.await(snp2)
-    snapshot3 = Fetcher.await(snp3)
-    where_is_bigfoot   = Fetcher.await(bgft)
+    [snapshot1, snapshot2, snapshot3, where_is_bigfoot] = [
+      fn -> Servy.VideoCam.get_snapshot("cam-1") end,
+      fn -> Servy.VideoCam.get_snapshot("cam-2") end,
+      fn -> Servy.VideoCam.get_snapshot("cam-3") end,
+      fn -> Servy.Tracker.get_location("bigfoot") end,
+    ] |> Enum.map(&Fetcher.async/1) |> Enum.map(&Fetcher.await/1)
 
     # Result
     sensors =  inspect {[snapshot1, snapshot2, snapshot3], where_is_bigfoot}
