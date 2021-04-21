@@ -36,7 +36,7 @@ defmodule Servy.PledgeServer do
 
   defp send_pledge_to_service(_name, _amount) do
     # CODE TO SEND PLEDGE TO EXTERNAL SERVICE PENDING
-    Process.sleep(1000)
+    Process.sleep(100)
     {:ok, "pledge-#{:rand.uniform(10_000)}"}
   end
 
