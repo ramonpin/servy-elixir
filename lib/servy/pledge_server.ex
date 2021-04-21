@@ -2,12 +2,12 @@ defmodule Servy.PledgeServer do
 
   require Logger
 
-  @name :pledge_server
+  @name __MODULE__
   @num_pledges 3
 
   # Client interface functions
-  def start do
-    pid = spawn(__MODULE__, :listen_loop, [%{pledges: [], total: 0}])
+  def start(initial \\ %{pledges: [], total: 0}) do
+    pid = spawn(__MODULE__, :listen_loop, [initial])
     Process.register(pid, @name)
     pid
   end
@@ -49,7 +49,7 @@ defmodule Servy.PledgeServer do
         listen_loop(state)
 
       unexpected ->
-        Logger.warn("Unexpected message on Pledge Server: #{inspect unexpected}")
+        Logger.warn("Unexpected message on #{__MODULE__}: #{inspect unexpected}")
         listen_loop(state)
     end
 
