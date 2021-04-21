@@ -3,6 +3,7 @@ defmodule Servy.Plugins do
   require Logger
 
   alias Servy.Conv
+  alias Servy.FourOhFourCounter
 
   @doc "Logs actual state of the conversantion."
   def log(%Conv{} = conv) do
@@ -17,6 +18,7 @@ defmodule Servy.Plugins do
     if Mix.env != :test do
       Logger.warn "The path #{path} does not exists."
     end
+    FourOhFourCounter.bump_count(path)
     conv
   end
 

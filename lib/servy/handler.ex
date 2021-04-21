@@ -38,6 +38,11 @@ defmodule Servy.Handler do
     PledgeController.total_pledged(conv)
   end
 
+  def route(%Conv{method: "GET", path: "/404s"} = conv) do
+    counts = Servy.FourOhFourCounter.get_counts
+    %{ conv | status: 200, resp_body: (inspect counts) }
+  end
+
   def route(%Conv{method: "GET", path: "/sensors"} = conv) do
     # Launch the three snapshots each in their own process
     [snapshot1, snapshot2, snapshot3, where_is_bigfoot] = [

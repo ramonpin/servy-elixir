@@ -3,6 +3,11 @@ defmodule HandlerTest do
 
   import Servy.Handler, only: [handle: 1]
 
+  setup_all _context do
+    pid = Servy.FourOhFourCounter.start
+    [ok: pid]
+  end
+
   test "GET /wildthings" do
     request = """
     GET /wildthings HTTP/1.1\r
