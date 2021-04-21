@@ -1,0 +1,7 @@
+[mix-test]
+    command = 'mix'
+    args = ['test']
+[mix-coveralls]
+    command = 'mix'
+    args = ['coveralls']
+
