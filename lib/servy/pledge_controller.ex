@@ -14,5 +14,10 @@ defmodule Servy.PledgeController do
     %{ conv | status: 201, resp_body: (inspect pledges) }
   end
 
+  def total_pledged(conv) do
+    total = PledgeServer.total_pledged()
+
+    %{ conv | status: 200, resp_body: "Total Pledged: #{total}" }
+  end
 end
 

@@ -1,25 +1,15 @@
 defmodule Servy.PledgeServer do
 
-  @name :pledge_server
+  require Logger
 
+  @name :pledge_server
+  @num_pledges 3
+
+  # Client interface functions
   def start do
-    pid = spawn(__MODULE__, :listen_loop, [[]])
+    pid = spawn(__MODULE__, :listen_loop, [%{pledges: [], total: 0}])
     Process.register(pid, @name)
     pid
-  end
-
-  def listen_loop(state) do
-    receive do
-      {sender, :create_pledge, name, amount} ->
-        {:ok, id}  = send_pledge_to_service(name, amount)
-        send sender, {:response, id}
-        listen_loop([ {id, name, amount} | state ] |> Enum.take(3))
-
-      {sender, :recent_pledges} ->
-        send sender, {:response, state}
-        listen_loop(state)
-    end
-
   end
 
   def create_pledge(name, amount) do
@@ -32,6 +22,37 @@ defmodule Servy.PledgeServer do
     send @name, {self(), :recent_pledges}
 
     receive do {:response, pledges} -> pledges end
+  end
+
+  def total_pledged do
+    send @name, {self(), :total_pledged}
+
+    receive do {:response, total} -> total end
+  end
+
+  # Server logic
+  def listen_loop(state) do
+    receive do
+      {sender, :create_pledge, name, amount} ->
+        {:ok, id}  = send_pledge_to_service(name, amount)
+        send sender, {:response, id}
+        new_pledges = [ {id, name, amount} | state.pledges ] |> Enum.take(@num_pledges)
+        new_total = state.total + amount
+        listen_loop(%{ state | pledges: new_pledges, total: new_total})
+
+      {sender, :recent_pledges} ->
+        send sender, {:response, state.pledges}
+        listen_loop(state)
+
+      {sender, :total_pledged} ->
+        send sender, {:response, state.total}
+        listen_loop(state)
+
+      unexpected ->
+        Logger.warn("Unexpected message on Pledge Server: #{inspect unexpected}")
+        listen_loop(state)
+    end
+
   end
 
   defp send_pledge_to_service(_name, _amount) do

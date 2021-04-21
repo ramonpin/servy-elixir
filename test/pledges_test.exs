@@ -9,7 +9,7 @@ defmodule PledgesTest do
     [ok: PledgeServer.start]
   end
 
-  test "Prueba" do
+  test "Pledge Server logic works as expected" do
     id1 = PledgeServer.create_pledge("ramon",  10)
     id2 = PledgeServer.create_pledge("nerea",  20)
     id3 = PledgeServer.create_pledge("thalia", 30)
@@ -26,6 +26,9 @@ defmodule PledgesTest do
     assert {id4, "juan",   40} == Enum.at(pledges, 0)
     assert {id3, "thalia", 30} == Enum.at(pledges, 1)
     assert {id2, "nerea",  20} == Enum.at(pledges, 2)
+
+    total_pledged = PledgeServer.total_pledged()
+    assert total_pledged == 100
   end
 
 end
