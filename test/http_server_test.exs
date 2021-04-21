@@ -10,11 +10,11 @@ defmodule HttpServerTest do
 
   test "check our server replies to requests" do
     # Start our HttpServer
-    pid = spawn(HttpServer, :start, [4000])
+    pid = spawn(HttpServer, :start, [4001])
 
     headers = [{"Content-Type", "application/json"}]
     request_body = ~s({"name": "Baloo", "type": "Grizzly Pale"})
-    request = ["http://localhost:4000/api/bears", request_body, headers]
+    request = ["http://localhost:4001/api/bears", request_body, headers]
 
     response_body = ~s({"msg": "Created a Grizzly Pale bear named Baloo!"})
 
