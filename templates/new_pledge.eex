@@ -1,0 +1,16 @@
+<meta charset="UTF-8">
+
+<form action="/pledges" method="POST">
+  <p>
+    Name:<br/>
+    <input type="text" name="name"/>
+  </p>
+  <p>
+    Amount:<br/>
+    <input type="text" name="amount"/>
+  </p>
+  <p>
+    <button type="submit">Pledge</button>
+  </p>
+</form>
+

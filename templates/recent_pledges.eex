@@ -1,0 +1,23 @@
+<meta charset="UTF-8">
+
+<h1>Recent Pledges</h1>
+
+<table>
+  <tr>
+    <th>Id</th>
+    <th>Name</th>
+    <th>Amount</th>
+  </tr>
+  <%= for pledge <- pledges do %>
+    <tr>
+      <td><%= elem(pledge, 0) %></td>
+      <td><%= elem(pledge, 1) %></td>
+      <td><%= elem(pledge, 2) %></td>
+    </tr>
+  <% end %>
+</table>
+
+<p>
+  <a href="/pledges/new">Make a pledge!</a>
+</p>
+
