@@ -29,6 +29,10 @@ defmodule PledgesTest do
 
     total_pledged = PledgeServer.total_pledged()
     assert total_pledged == 100
+
+    PledgeServer.clear()
+    assert PledgeServer.total_pledged() == 0
+    assert PledgeServer.recent_pledges() == []
   end
 
 end
