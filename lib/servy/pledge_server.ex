@@ -1,43 +1,46 @@
 defmodule Servy.PledgeServer do
-
-  alias Servy.GenericServer
+  use GenServer
 
   @name __MODULE__
   @num_pledges 3
 
+  def init(initial) do
+    {:ok, initial}
+  end
+
   def start(initial \\ %{pledges: [], total: 0}) do
-    GenericServer.start(__MODULE__, initial, @name)
+    GenServer.start(__MODULE__, initial, name: @name)
   end
 
   # Client interface functions
   def create_pledge(name, amount) do
-    GenericServer.call @name, {:create_pledge, name, amount}
+    GenServer.call @name, {:create_pledge, name, amount}
   end
 
   def recent_pledges do
-    GenericServer.call @name, :recent_pledges
+    GenServer.call @name, :recent_pledges
   end
 
   def total_pledged do
-    GenericServer.call @name, :total_pledged
+    GenServer.call @name, :total_pledged
   end
 
   def clear do
-    GenericServer.cast @name, :clear
+    GenServer.cast @name, :clear
   end
 
   # Handle calls
-  def handle_call(:recent_pledges, state), do: {state.pledges, state}
-  def handle_call(:total_pledged, state), do: {state.total, state}
+  def handle_call(:recent_pledges, _from, state), do: {:reply, state.pledges, state}
+  def handle_call(:total_pledged, _from, state), do: {:reply, state.total, state}
 
-  def handle_call({:create_pledge, name, amount}, state) do
+  def handle_call({:create_pledge, name, amount}, _from, state) do
     {:ok, id}  = send_pledge_to_service(name, amount)
 
     new_pledges = [ {id, name, amount} | state.pledges ] |> Enum.take(@num_pledges)
     new_total = state.total + amount
     new_state = %{ state | pledges: new_pledges, total: new_total}
 
-    {id, new_state}
+    {:reply, id, new_state}
   end
 
   defp send_pledge_to_service(_name, _amount) do
@@ -47,7 +50,7 @@ defmodule Servy.PledgeServer do
   end
 
   def handle_cast(:clear, _state) do
-    %{pledges: [], total: 0}
+    {:noreply, %{pledges: [], total: 0}}
   end
 
 end
