@@ -2,61 +2,40 @@ defmodule Servy.FourOhFourCounter do
 
   require Logger
 
+  alias Servy.GenericServer
+
   @name __MODULE__
 
   # Client interface
   def start(initial \\ %{}) when is_map(initial) do
-    case Process.whereis(__MODULE__) do
-      nil ->
-        pid = spawn(__MODULE__, :listen_loop, [initial])
-        Process.register(pid, @name)
-        pid
-      pid ->
-        pid
+    case Process.whereis(@name) do
+      nil -> GenericServer.start(__MODULE__, initial, @name)
+      pid -> pid
     end
   end
 
   def init_count(initial \\ %{}) when is_map(initial) do
-    send @name, {self(), :init_count, initial}
+    GenericServer.cast(@name, {:init_count, initial})
   end
 
   def bump_count(path) do
-    send @name, {self(), :bump_count, path}
+    GenericServer.cast(@name, {:bump_count, path})
   end
 
   def get_count(path) do
-    send @name, {self(), :get_count, path}
-
-    receive do {:result, count} -> count end
+    GenericServer.call(@name, {:get_count, path})
   end
 
   def get_counts do
-    send @name, {self(), :get_counts}
-
-    receive do {:result, counts} -> counts end
+    GenericServer.call(@name, :get_counts)
   end
 
-  # Server logic
-  def listen_loop(state) do
-    receive do
-      {_sender, :init_count, state} ->
-        listen_loop(state)
+  # Callbacks logic
+  def handle_cast({:init_count, new_state}, _state), do: new_state
+  def handle_cast({:bump_count, path}, state), do: Map.update(state, path, 1, &(&1 + 1))
 
-      {_sender, :bump_count, path} ->
-        listen_loop(Map.update(state, path, 1, &(&1 + 1)))
-
-      {sender, :get_count, path} ->
-        send sender, {:result, Map.get(state, path, 0)}
-        listen_loop(state)
-
-      {sender, :get_counts} ->
-        send sender, {:result, state}
-        listen_loop(state)
-
-      unexpected ->
-        Logger.warn("Unexpected message on #{__MODULE__}: #{inspect unexpected}")
-    end
-  end
+  def handle_call({:get_count, path}, state), do: {Map.get(state, path, 0), state}
+  def handle_call(:get_counts, state), do: {state, state}
 
 end
 
