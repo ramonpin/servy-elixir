@@ -1,31 +1,29 @@
 defmodule Servy.PledgeServer do
 
-  require Logger
+  alias Servy.GenericServer
 
   @name __MODULE__
   @num_pledges 3
 
-  # Client interface functions
   def start(initial \\ %{pledges: [], total: 0}) do
-    pid = spawn(__MODULE__, :listen_loop, [initial])
-    Process.register(pid, @name)
-    pid
+    GenericServer.start(__MODULE__, initial, @name)
   end
 
+  # Client interface functions
   def create_pledge(name, amount) do
-    call @name, {:create_pledge, name, amount}
+    GenericServer.call @name, {:create_pledge, name, amount}
   end
 
   def recent_pledges do
-    call @name, :recent_pledges
+    GenericServer.call @name, :recent_pledges
   end
 
   def total_pledged do
-    call @name, :total_pledged
+    GenericServer.call @name, :total_pledged
   end
 
   def clear do
-    cast @name, :clear
+    GenericServer.cast @name, :clear
   end
 
   # Handle calls
@@ -50,31 +48,6 @@ defmodule Servy.PledgeServer do
 
   def handle_cast(:clear, _state) do
     %{pledges: [], total: 0}
-  end
-
-  # Generic Server Logic
-  def call(pid, message) do
-    send pid, {:call, self(), message}
-    receive do {:response, response} -> response end
-  end
-
-  def cast(pid, message) do
-    send pid, {:cast, message}
-  end
-
-  def listen_loop(state) do
-    receive do
-      {:call, sender, message} when is_pid(sender) ->
-        {response, new_state} = handle_call(message, state)
-        send sender, {:response, response}
-        listen_loop(new_state)
-      {:cast, message} ->
-        new_state = handle_cast(message, state)
-        listen_loop(new_state)
-      unexpected ->
-        Logger.warn("Unexpected message on #{__MODULE__}: #{inspect unexpected}")
-        listen_loop(state)
-    end
   end
 
 end
