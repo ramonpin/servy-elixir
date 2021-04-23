@@ -2,14 +2,17 @@ defmodule Servy.PledgeServer do
   use GenServer
 
   @name __MODULE__
-  @num_pledges 3
 
-  def init(initial) do
+  defmodule State do
+    defstruct num_pledges: 3, pledges: [], total: 0
+  end
+
+  def init(%State{} = initial) do
     {:ok, initial}
   end
 
-  def start(initial \\ %{pledges: [], total: 0}) do
-    GenServer.start(__MODULE__, initial, name: @name)
+  def start do
+    GenServer.start(__MODULE__, %State{}, name: @name)
   end
 
   # Client interface functions
@@ -36,7 +39,7 @@ defmodule Servy.PledgeServer do
   def handle_call({:create_pledge, name, amount}, _from, state) do
     {:ok, id}  = send_pledge_to_service(name, amount)
 
-    new_pledges = [ {id, name, amount} | state.pledges ] |> Enum.take(@num_pledges)
+    new_pledges = [ {id, name, amount} | state.pledges ] |> Enum.take(state.num_pledges)
     new_total = state.total + amount
     new_state = %{ state | pledges: new_pledges, total: new_total}
 

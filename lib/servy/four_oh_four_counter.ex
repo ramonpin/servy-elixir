@@ -8,15 +8,15 @@ defmodule Servy.FourOhFourCounter do
     {:ok, initial}
   end
 
-  def start(initial \\ %{}) when is_map(initial) do
+  def start do
     case Process.whereis(@name) do
-      nil -> GenServer.start(__MODULE__, initial, name: @name)
+      nil -> GenServer.start(__MODULE__, %{}, name: @name)
       pid -> pid
     end
   end
 
-  def init_count(initial \\ %{}) when is_map(initial) do
-    GenServer.cast(@name, {:init_count, initial})
+  def init_count do
+    GenServer.cast(@name, :init_count)
   end
 
   def bump_count(path) do
@@ -32,7 +32,7 @@ defmodule Servy.FourOhFourCounter do
   end
 
   # Callbacks logic
-  def handle_cast({:init_count, new_state}, _state), do: {:noreply, new_state}
+  def handle_cast(:init_count, _state), do: {:noreply, %{}}
   def handle_cast({:bump_count, path}, state), do: {:noreply, Map.update(state, path, 1, &(&1 + 1))}
 
   def handle_call({:get_count, path}, _from, state), do: {:reply, Map.get(state, path, 0), state}
