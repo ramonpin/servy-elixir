@@ -24,6 +24,7 @@ defmodule Servy.MixProject do
       {:poison, "~> 4.0"},
       {:earmark, "~> 1.4"},
       {:httpoison, "~> 1.6"},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
     ]
   end
 end
