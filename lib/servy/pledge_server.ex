@@ -44,7 +44,7 @@ defmodule Servy.PledgeServer do
 
       _env ->
       recent_pledges = fetch_recent_pledges_from_service()
-      total = Enum.reduce(recent_pledges, 0, fn {_, amnt}, total -> total + amnt end)
+      total = Enum.reduce(recent_pledges, 0, fn {_, _, amnt}, total -> total + amnt end)
       {:ok, %{ args | pledges: recent_pledges, total: total}}
     end
   end
@@ -89,7 +89,7 @@ defmodule Servy.PledgeServer do
   defp fetch_recent_pledges_from_service() do
     # CODE TO SIMULATE RETRIEVAL OF LAST PLEDGES
     Process.sleep(100)
-    [{"wilma", 10}, {"robert", 15}]
+    [{"fake-0000", "wilma", 10}, {"fake-0001", "robert", 15}]
   end
 
 end
