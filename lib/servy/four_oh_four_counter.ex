@@ -9,10 +9,7 @@ defmodule Servy.FourOhFourCounter do
   end
 
   def start do
-    case Process.whereis(@name) do
-      nil -> GenServer.start(__MODULE__, %{}, name: @name)
-      pid -> pid
-    end
+    GenServer.start(__MODULE__, %{}, name: @name)
   end
 
   def init_count do
