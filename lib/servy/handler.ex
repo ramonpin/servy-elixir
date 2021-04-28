@@ -48,17 +48,8 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/sensors"} = conv) do
-    # Launch the three snapshots each in their own process
-    [snapshot1, snapshot2, snapshot3, where_is_bigfoot] = [
-      fn -> Servy.VideoCam.get_snapshot("cam-1") end,
-      fn -> Servy.VideoCam.get_snapshot("cam-2") end,
-      fn -> Servy.VideoCam.get_snapshot("cam-3") end,
-      fn -> Servy.Tracker.get_location("bigfoot") end,
-    ] |> Enum.map(&Task.async/1) |> Enum.map(&Task.await/1)
-
-    # Result
-    sensors =  inspect {[snapshot1, snapshot2, snapshot3], where_is_bigfoot}
-
+    %{snapshots: snapshots, location: where_is_bigfoot} = Servy.SensorServer.get_sensor_data()
+    sensors =  inspect {snapshots, where_is_bigfoot}
     %{ conv | status: 200, resp_body: sensors }
   end
 
