@@ -32,6 +32,13 @@ defmodule PledgesTest do
     total_pledged = PledgeServer.total_pledged()
     assert total_pledged == 100
 
+    PledgeServer.set_cache_size(2)
+    pledges = PledgeServer.recent_pledges()
+    assert length(pledges) == 2
+    assert {id4, "juan",   40} == Enum.at(pledges, 0)
+    assert {id3, "thalia", 30} == Enum.at(pledges, 1)
+    assert PledgeServer.total_pledged() == 100
+
     PledgeServer.clear()
     assert PledgeServer.total_pledged() == 0
     assert PledgeServer.recent_pledges() == []

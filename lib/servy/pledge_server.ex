@@ -7,8 +7,8 @@ defmodule Servy.PledgeServer do
     defstruct num_pledges: 3, pledges: [], total: 0
   end
 
-  def init(%State{} = initial) do
-    {:ok, initial}
+  def init(args) do
+    {:ok, args}
   end
 
   def start do
@@ -32,6 +32,10 @@ defmodule Servy.PledgeServer do
     GenServer.cast @name, :clear
   end
 
+  def set_cache_size(n) when is_integer(n) do
+    GenServer.cast @name, {:set_cache_size, n}
+  end
+
   # Handle calls
   def handle_call(:recent_pledges, _from, state), do: {:reply, state.pledges, state}
   def handle_call(:total_pledged, _from, state), do: {:reply, state.total, state}
@@ -53,7 +57,11 @@ defmodule Servy.PledgeServer do
   end
 
   def handle_cast(:clear, _state) do
-    {:noreply, %{pledges: [], total: 0}}
+    {:noreply, %State{}}
+  end
+
+  def handle_cast({:set_cache_size, n}, state) do
+    {:noreply, %{ state | num_pledges: n, pledges: Enum.take(state.pledges, n) }}
   end
 
 end
