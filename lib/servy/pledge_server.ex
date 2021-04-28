@@ -8,8 +8,9 @@ defmodule Servy.PledgeServer do
     defstruct num_pledges: 3, pledges: [], total: 0
   end
 
-  def start do
-    GenServer.start(__MODULE__, %State{}, name: @name)
+  def start_link(_arg) do
+    Logger.info "Starting PledgeServer..."
+    GenServer.start_link(__MODULE__, %State{}, name: @name)
   end
 
   # Client interface functions

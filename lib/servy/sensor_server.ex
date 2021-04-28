@@ -11,8 +11,9 @@ defmodule Servy.SensorServer do
 
   # Client interface
 
-  def start(randomized \\ true) do
-    GenServer.start(__MODULE__, randomized, name: @name)
+  def start_link(_arg, randomized \\ true) do
+    Logger.info "Starting SensorServer..."
+    GenServer.start_link(__MODULE__, randomized, name: @name)
   end
 
   def get_sensor_data do

@@ -6,7 +6,7 @@ defmodule PledgesTest do
   setup_all _context do
     # This is just a try. You only need to return the :ok atom
     # to make it work.
-    [ok: PledgeServer.start]
+    [ok: PledgeServer.start_link(:ok)]
   end
 
   test "Pledge Server logic works as expected" do

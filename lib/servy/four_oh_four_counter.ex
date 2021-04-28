@@ -1,6 +1,6 @@
 defmodule Servy.FourOhFourCounter do
-  require Logger
   use GenServer
+  require Logger
 
   @name __MODULE__
 
@@ -8,8 +8,9 @@ defmodule Servy.FourOhFourCounter do
     {:ok, initial}
   end
 
-  def start do
-    GenServer.start(__MODULE__, %{}, name: @name)
+  def start_link(_arg) do
+    Logger.info "Starting 404 counter..."
+    GenServer.start_link(__MODULE__, %{}, name: @name)
   end
 
   def init_count do
