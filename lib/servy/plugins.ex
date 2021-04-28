@@ -15,9 +15,7 @@ defmodule Servy.Plugins do
 
   @doc "Logs 404 requests."
   def track(%Conv{status: 404, path: path} = conv) do
-    if Mix.env != :test do
-      Logger.warn "The path #{path} does not exists."
-    end
+    Logger.warn "The path #{path} does not exists."
     FourOhFourCounter.bump_count(path)
     conv
   end
