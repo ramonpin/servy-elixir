@@ -1,5 +1,6 @@
 defmodule Servy.PledgeServer do
   use GenServer
+  require Logger
 
   @name __MODULE__
 
@@ -69,6 +70,13 @@ defmodule Servy.PledgeServer do
 
   def handle_cast({:set_cache_size, n}, state) do
     {:noreply, %{ state | num_pledges: n, pledges: Enum.take(state.pledges, n) }}
+  end
+
+  # Handle info messages
+  def handle_info(message, state) do
+    # Log and Ignore direct messages
+    Logger.warn("An unkwon message has arrived: #{inspect message}")
+    {:noreply, state}
   end
 
   # Internal service logic
