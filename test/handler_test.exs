@@ -5,7 +5,7 @@ defmodule HandlerTest do
 
   setup_all _context do
     fof_pid = Servy.FourOhFourCounter.start
-    sensor_pid = Servy.SensorServer.start(random: false)
+    sensor_pid = Servy.SensorServer.start(false)
     [fof_pid: fof_pid, sensor_pid: sensor_pid]
   end
 

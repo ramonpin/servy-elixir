@@ -1,15 +1,17 @@
 defmodule Servy.SensorServer do
   use GenServer
+  require Logger
 
   @name __MODULE__
+  @refresh_period :timer.seconds(30)
 
   defmodule State do
-    defstruct data: %{}, randomized: true
+    defstruct data: %{}, ts: 0, randomized: true
   end
 
   # Client interface
 
-  def start(random: randomized) do
+  def start(randomized \\ true) do
     GenServer.start(__MODULE__, randomized, name: @name)
   end
 
@@ -21,11 +23,24 @@ defmodule Servy.SensorServer do
 
   def init(randomized) do
     initial_state = run_tasks_to_get_sensor_data(randomized)
-    {:ok, %State{data: initial_state, randomized: randomized}}
+    Process.send_after(@name, :refresh_sensors, @refresh_period)
+    {:ok, %State{data: initial_state, ts: DateTime.utc_now, randomized: randomized}}
   end
 
   def handle_call(:get_sensor_data, _from, %State{} = state) do
     {:reply, state.data, state}
+  end
+
+  def handle_info(:refresh_sensors, %State{} = state) do
+    initial_state = run_tasks_to_get_sensor_data(state.randomized)
+    Process.send_after(@name, :refresh_sensors, @refresh_period)
+    {:noreply, %State{data: initial_state, ts: DateTime.utc_now}}
+  end
+
+  def handle_info(message, state) do
+    # Log and Ignore direct messages
+    Logger.warn("An unkwon message has arrived: #{inspect message}")
+    {:noreply, state}
   end
 
   # Internal server logic
@@ -41,5 +56,6 @@ defmodule Servy.SensorServer do
 
     %{snapshots: Enum.take(sensors, 3), location: List.last(sensors)}
   end
+
 end
 
