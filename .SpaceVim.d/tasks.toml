@@ -1,6 +1,9 @@
 [mix-test]
     command = 'mix'
     args = ['test']
+[mix-credo]
+    command = 'mix'
+    args = ['credo']
 [mix-coveralls]
     command = 'mix'
     args = ['coveralls']
