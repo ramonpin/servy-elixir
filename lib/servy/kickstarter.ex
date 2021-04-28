@@ -4,9 +4,17 @@ defmodule Servy.KickStarter do
 
   @name __MODULE__
 
+  defmodule State do
+    defstruct http_server: nil
+  end
+
   def start do
     Logger.info "Start the kickstarter..."
     GenServer.start(__MODULE__, :ok, name: @name)
+  end
+
+  def get_server do
+    GenServer.call(@name, :get_server)
   end
 
   # Server callbacks
@@ -14,19 +22,21 @@ defmodule Servy.KickStarter do
   def init(:ok) do
     # Allow us to trap when linked process die
     Process.flag(:trap_exit, true)
-    {:ok, start_server()}
+    {:ok, %State{http_server: start_server()}}
+  end
+
+  def handle_call(:get_server, _from, %State{} = state) do
+    {:reply, state.http_server, state}
   end
 
   def handle_info({:EXIT, _pid, reason}, _state) do
     Logger.error "HttpServer died (#{inspect reason})"
-    {:noreply, start_server()}
+    {:noreply, %State{http_server: start_server()}}
   end
-
 
   defp start_server do
     Logger.info "Start the HTTP server..."
     http_server = spawn_link(Servy.HttpServer, :start, [4000])
-    Process.register(http_server, :http_server)
 
     http_server
   end
