@@ -7,10 +7,6 @@ defmodule Servy.PledgeServer do
     defstruct num_pledges: 3, pledges: [], total: 0
   end
 
-  def init(args) do
-    {:ok, args}
-  end
-
   def start do
     GenServer.start(__MODULE__, %State{}, name: @name)
   end
@@ -36,6 +32,22 @@ defmodule Servy.PledgeServer do
     GenServer.cast @name, {:set_cache_size, n}
   end
 
+  # GENSERVER CALLBACKS
+  # ----------------------
+  def init(args) do
+    case Mix.env do
+      :test ->
+        # We do not want to retrieve recent pledges from
+        # external server while in test
+        {:ok, args}
+
+      _env ->
+      recent_pledges = fetch_recent_pledges_from_service()
+      total = Enum.reduce(recent_pledges, 0, fn {_, amnt}, total -> total + amnt end)
+      {:ok, %{ args | pledges: recent_pledges, total: total}}
+    end
+  end
+
   # Handle calls
   def handle_call(:recent_pledges, _from, state), do: {:reply, state.pledges, state}
   def handle_call(:total_pledged, _from, state), do: {:reply, state.total, state}
@@ -50,18 +62,26 @@ defmodule Servy.PledgeServer do
     {:reply, id, new_state}
   end
 
-  defp send_pledge_to_service(_name, _amount) do
-    # CODE TO SEND PLEDGE TO EXTERNAL SERVICE PENDING
-    Process.sleep(100)
-    {:ok, "pledge-#{:rand.uniform(10_000)}"}
-  end
-
+  # Handle casts
   def handle_cast(:clear, _state) do
     {:noreply, %State{}}
   end
 
   def handle_cast({:set_cache_size, n}, state) do
     {:noreply, %{ state | num_pledges: n, pledges: Enum.take(state.pledges, n) }}
+  end
+
+  # Internal service logic
+  defp send_pledge_to_service(_name, _amount) do
+    # CODE TO SEND PLEDGE TO EXTERNAL SERVICE PENDING
+    Process.sleep(100)
+    {:ok, "pledge-#{:rand.uniform(10_000)}"}
+  end
+
+  defp fetch_recent_pledges_from_service() do
+    # CODE TO SIMULATE RETRIEVAL OF LAST PLEDGES
+    Process.sleep(100)
+    [{"wilma", 10}, {"robert", 15}]
   end
 
 end
