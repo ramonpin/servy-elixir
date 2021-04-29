@@ -3,12 +3,6 @@ defmodule PledgesTest do
 
   alias Servy.PledgeServer
 
-  setup_all _context do
-    # This is just a try. You only need to return the :ok atom
-    # to make it work.
-    [ok: PledgeServer.start_link(:ok)]
-  end
-
   test "Pledge Server logic works as expected" do
     id1 = PledgeServer.create_pledge("ramon",  10)
     id2 = PledgeServer.create_pledge("nerea",  20)

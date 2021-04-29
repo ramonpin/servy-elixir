@@ -3,12 +3,6 @@ defmodule HandlerTest do
 
   import Servy.Handler, only: [handle: 1]
 
-  setup_all _context do
-    fof_pid = Servy.FourOhFourCounter.start_link(:ok)
-    sensor_pid = Servy.SensorServer.start_link(:ok, false)
-    [fof_pid: fof_pid, sensor_pid: sensor_pid]
-  end
-
   test "GET /wildthings" do
     request = """
     GET /wildthings HTTP/1.1\r

@@ -13,7 +13,11 @@ defmodule Servy.SensorServer do
 
   def start_link(_arg, randomized \\ true) do
     Logger.info "Starting SensorServer..."
-    GenServer.start_link(__MODULE__, randomized, name: @name)
+    unless Mix.env == :test do
+      GenServer.start_link(__MODULE__, randomized, name: @name)
+    else
+      GenServer.start_link(__MODULE__, false, name: @name)
+    end
   end
 
   def get_sensor_data do

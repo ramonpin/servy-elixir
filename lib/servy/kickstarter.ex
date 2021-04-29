@@ -8,7 +8,7 @@ defmodule Servy.KickStarter do
     defstruct http_server: nil
   end
 
-  def start do
+  def start_link(_arg) do
     Logger.info "Start the kickstarter..."
     GenServer.start(__MODULE__, :ok, name: @name)
   end
