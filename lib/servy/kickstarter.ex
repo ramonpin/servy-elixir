@@ -36,7 +36,8 @@ defmodule Servy.KickStarter do
 
   defp start_server do
     Logger.info "Start the HTTP server..."
-    http_server = spawn_link(Servy.HttpServer, :start, [4000])
+    port = Application.get_env(:servy, :port)
+    http_server = spawn_link(Servy.HttpServer, :start, [port])
 
     http_server
   end

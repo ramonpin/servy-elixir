@@ -1,17 +1,16 @@
 defmodule HttpServerTest do
   use ExUnit.Case
 
-  alias Servy.HttpServer
-
   defp assert_correct_response(response, response_body) do
     assert response.status_code == 201
     assert response.body == response_body
   end
 
   test "check our server replies to requests" do
+    port = Application.get_env(:servy, :port)
     headers = [{"Content-Type", "application/json"}]
     request_body = ~s({"name": "Baloo", "type": "Grizzly Pale"})
-    request = ["http://localhost:4000/api/bears", request_body, headers]
+    request = ["http://localhost:#{port}/api/bears", request_body, headers]
 
     response_body = ~s({"msg": "Created a Grizzly Pale bear named Baloo!"})
 
