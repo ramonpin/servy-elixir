@@ -10,7 +10,7 @@ defmodule Servy.KickStarter do
 
   def start_link(_arg) do
     Logger.info "Start the kickstarter..."
-    GenServer.start(__MODULE__, :ok, name: @name)
+    GenServer.start_link(__MODULE__, :ok, name: @name)
   end
 
   def get_server do
