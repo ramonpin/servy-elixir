@@ -5,7 +5,7 @@ defmodule Servy.ServicesSupervisor do
   @name __MODULE__
 
   def start_link(_args) do
-    Logger.info "Starting the services supervisor..."
+    Logger.info("Starting the services supervisor...")
     Supervisor.start_link(__MODULE__, :ok, name: @name)
   end
 
@@ -19,6 +19,4 @@ defmodule Servy.ServicesSupervisor do
 
     Supervisor.init(children, strategy: :one_for_one)
   end
-
 end
-

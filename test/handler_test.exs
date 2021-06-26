@@ -15,12 +15,12 @@ defmodule HandlerTest do
     response = handle(request)
 
     assert response == """
-    HTTP/1.1 200 OK\r
-    Content-Type: text/html\r
-    Content-Length: 20\r
-    \r
-    Bears, Lions, Tigers
-    """
+           HTTP/1.1 200 OK\r
+           Content-Type: text/html\r
+           Content-Length: 20\r
+           \r
+           Bears, Lions, Tigers
+           """
   end
 
   test "GET /bears" do
@@ -70,12 +70,12 @@ defmodule HandlerTest do
     response = handle(request)
 
     assert response == """
-    HTTP/1.1 404 Not Found\r
-    Content-Type: text/html\r
-    Content-Length: 17\r
-    \r
-    No /bigfoot here!
-    """
+           HTTP/1.1 404 Not Found\r
+           Content-Type: text/html\r
+           Content-Length: 17\r
+           \r
+           No /bigfoot here!
+           """
   end
 
   test "GET /bears/1" do
@@ -115,12 +115,12 @@ defmodule HandlerTest do
     response = handle(request)
 
     assert response == """
-    HTTP/1.1 200 OK\r
-    Content-Type: text/html\r
-    Content-Length: 20\r
-    \r
-    Bears, Lions, Tigers
-    """
+           HTTP/1.1 200 OK\r
+           Content-Type: text/html\r
+           Content-Length: 20\r
+           \r
+           Bears, Lions, Tigers
+           """
   end
 
   test "GET /about" do
@@ -168,12 +168,12 @@ defmodule HandlerTest do
     response = handle(request)
 
     assert response == """
-    HTTP/1.1 201 Created\r
-    Content-Type: text/html\r
-    Content-Length: 33\r
-    \r
-    Created a Brown bear named Baloo!
-    """
+           HTTP/1.1 201 Created\r
+           Content-Type: text/html\r
+           Content-Length: 33\r
+           \r
+           Created a Brown bear named Baloo!
+           """
   end
 
   test "DELETE /bears" do
@@ -275,12 +275,9 @@ defmodule HandlerTest do
     """
 
     assert handle(request) == response
-
   end
 
   defp remove_whitespace(text) do
     String.replace(text, ~r{\s}, "")
   end
-
 end
-

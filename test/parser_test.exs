@@ -5,10 +5,11 @@ defmodule ParserTest do
   alias Servy.Parser
 
   test "parse header lines into map" do
-    headers = Parser.parse_headers([
-      "Content-Type: application/json",
-      "Length: 560"
-    ])
+    headers =
+      Parser.parse_headers([
+        "Content-Type: application/json",
+        "Length: 560"
+      ])
 
     expected_headers = %{
       "Content-Type" => "application/json",
@@ -25,6 +26,4 @@ defmodule ParserTest do
 
     assert expected_params == params
   end
-
 end
-

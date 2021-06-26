@@ -1,17 +1,17 @@
 defmodule Servy.Conv do
-  defstruct [
-    method: "",
-    path: "",
-    headers: {},
-    params: {},
-    resp_headers: %{"Content-Type" => "text/html"},
-    resp_body: "",
-    status: nil
-  ]
+  defstruct method: "",
+            path: "",
+            headers: {},
+            params: {},
+            resp_headers: %{"Content-Type" => "text/html"},
+            resp_body: "",
+            status: nil
 
   def full_status(%Servy.Conv{status: status}) do
     "#{status} #{status_reason(status)}"
-  end#
+  end
+
+  #
 
   defp status_reason(code) do
     %{
@@ -23,6 +23,4 @@ defmodule Servy.Conv do
       500 => "Internal Server Error"
     }[code]
   end
-
 end
-

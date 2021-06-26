@@ -3,10 +3,9 @@ defmodule MarkdownTest do
 
   import Servy.FileHandler, only: [handle_markdown: 2]
 
-  @pages_path Path.expand("pages", File.cwd!)
+  @pages_path Path.expand("pages", File.cwd!())
 
   test "markdown pages are correctly rendered" do
-
     expected_html = """
     <meta charset="UTF-8" />
     <h1>
@@ -31,11 +30,9 @@ defmodule MarkdownTest do
     conv = handle_markdown(Path.join(@pages_path, "faq.md"), %Servy.Conv{})
 
     assert remove_whitespace(expected_html) == remove_whitespace(conv.resp_body)
-
   end
 
   defp remove_whitespace(text) do
     String.replace(text, ~r{\s}, "")
   end
-
 end

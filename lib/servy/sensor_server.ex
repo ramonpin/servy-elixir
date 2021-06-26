@@ -12,8 +12,9 @@ defmodule Servy.SensorServer do
   # Client interface
 
   def start_link(_arg, randomized \\ true) do
-    Logger.info "Starting SensorServer..."
-    unless Mix.env == :test do
+    Logger.info("Starting SensorServer...")
+
+    unless Mix.env() == :test do
       GenServer.start_link(__MODULE__, randomized, name: @name)
     else
       GenServer.start_link(__MODULE__, false, name: @name)
@@ -21,7 +22,7 @@ defmodule Servy.SensorServer do
   end
 
   def get_sensor_data do
-    GenServer.call @name, :get_sensor_data
+    GenServer.call(@name, :get_sensor_data)
   end
 
   # Server callbacks
@@ -29,7 +30,7 @@ defmodule Servy.SensorServer do
   def init(randomized) do
     initial_state = run_tasks_to_get_sensor_data(randomized)
     Process.send_after(@name, :refresh_sensors, @refresh_period)
-    {:ok, %State{data: initial_state, ts: DateTime.utc_now, randomized: randomized}}
+    {:ok, %State{data: initial_state, ts: DateTime.utc_now(), randomized: randomized}}
   end
 
   def handle_call(:get_sensor_data, _from, %State{} = state) do
@@ -39,12 +40,12 @@ defmodule Servy.SensorServer do
   def handle_info(:refresh_sensors, %State{} = state) do
     initial_state = run_tasks_to_get_sensor_data(state.randomized)
     Process.send_after(@name, :refresh_sensors, @refresh_period)
-    {:noreply, %State{data: initial_state, ts: DateTime.utc_now}}
+    {:noreply, %State{data: initial_state, ts: DateTime.utc_now()}}
   end
 
   def handle_info(message, state) do
     # Log and Ignore direct messages
-    Logger.warn("An unkwon message has arrived: #{inspect message}")
+    Logger.warn("An unkwon message has arrived: #{inspect(message)}")
     {:noreply, state}
   end
 
@@ -52,15 +53,16 @@ defmodule Servy.SensorServer do
 
   defp run_tasks_to_get_sensor_data(randomized) do
     # Launch the three snapshots each in their own process
-    sensors = [
-      fn -> Servy.VideoCam.get_snapshot("cam-1", randomized) end,
-      fn -> Servy.VideoCam.get_snapshot("cam-2", randomized) end,
-      fn -> Servy.VideoCam.get_snapshot("cam-3", randomized) end,
-      fn -> Servy.Tracker.get_location("bigfoot") end,
-    ] |> Enum.map(&Task.async/1) |> Enum.map(&Task.await/1)
+    sensors =
+      [
+        fn -> Servy.VideoCam.get_snapshot("cam-1", randomized) end,
+        fn -> Servy.VideoCam.get_snapshot("cam-2", randomized) end,
+        fn -> Servy.VideoCam.get_snapshot("cam-3", randomized) end,
+        fn -> Servy.Tracker.get_location("bigfoot") end
+      ]
+      |> Enum.map(&Task.async/1)
+      |> Enum.map(&Task.await/1)
 
     %{snapshots: Enum.take(sensors, 3), location: List.last(sensors)}
   end
-
 end
-

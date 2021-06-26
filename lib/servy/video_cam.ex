@@ -1,5 +1,4 @@
 defmodule Servy.VideoCam do
-
   @doc """
   def get_snapshot(camid, randomized)
   Just mocks a call to the API to take photos
@@ -13,6 +12,4 @@ defmodule Servy.VideoCam do
     Process.sleep(1000)
     "#{camid}-snapshot.jpg"
   end
-
 end
-

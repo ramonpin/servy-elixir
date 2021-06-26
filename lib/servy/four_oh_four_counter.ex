@@ -9,7 +9,7 @@ defmodule Servy.FourOhFourCounter do
   end
 
   def start_link(_arg) do
-    Logger.info "Starting 404 counter..."
+    Logger.info("Starting 404 counter...")
     GenServer.start_link(__MODULE__, %{}, name: @name)
   end
 
@@ -31,10 +31,10 @@ defmodule Servy.FourOhFourCounter do
 
   # Callbacks logic
   def handle_cast(:init_count, _state), do: {:noreply, %{}}
-  def handle_cast({:bump_count, path}, state), do: {:noreply, Map.update(state, path, 1, &(&1 + 1))}
+
+  def handle_cast({:bump_count, path}, state),
+    do: {:noreply, Map.update(state, path, 1, &(&1 + 1))}
 
   def handle_call({:get_count, path}, _from, state), do: {:reply, Map.get(state, path, 0), state}
   def handle_call(:get_counts, _from, state), do: {:reply, state, state}
-
 end
-

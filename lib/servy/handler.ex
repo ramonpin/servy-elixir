@@ -1,8 +1,7 @@
 defmodule Servy.Handler do
-
   @moduledoc "Handles HTTP requests,"
 
-  @pages_path Path.expand("pages", File.cwd!)
+  @pages_path Path.expand("pages", File.cwd!())
 
   alias Servy.Api
   alias Servy.Conv
@@ -43,19 +42,19 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/404s"} = conv) do
-    counts = Servy.FourOhFourCounter.get_counts
-    %{ conv | status: 200, resp_body: (inspect counts) }
+    counts = Servy.FourOhFourCounter.get_counts()
+    %{conv | status: 200, resp_body: inspect(counts)}
   end
 
   def route(%Conv{method: "GET", path: "/sensors"} = conv) do
     %{snapshots: snapshots, location: where_is_bigfoot} = Servy.SensorServer.get_sensor_data()
-    sensors =  inspect {snapshots, where_is_bigfoot}
-    %{ conv | status: 200, resp_body: sensors }
+    sensors = inspect({snapshots, where_is_bigfoot})
+    %{conv | status: 200, resp_body: sensors}
   end
 
   def route(%Conv{method: "GET", path: "/hibernate/" <> time} = conv) do
-    time |> String.to_integer |> :timer.sleep
-    %{ conv | resp_body: "Awake!", status: 200 }
+    time |> String.to_integer() |> :timer.sleep()
+    %{conv | resp_body: "Awake!", status: 200}
   end
 
   def route(%Conv{method: "GET", path: "/kaboom"} = _conv) do
@@ -63,7 +62,7 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
-    %{ conv | resp_body: "Bears, Lions, Tigers", status: 200 }
+    %{conv | resp_body: "Bears, Lions, Tigers", status: 200}
   end
 
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
@@ -117,7 +116,7 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{path: path} = conv) do
-    %{ conv | resp_body: "No #{path} here!", status: 404 }
+    %{conv | resp_body: "No #{path} here!", status: 404}
   end
 
   def format_response(%Conv{} = conv) do
@@ -132,14 +131,15 @@ defmodule Servy.Handler do
   defp format_response_headers(%Conv{} = conv) do
     for {key, value} <- conv.resp_headers do
       "#{key}: #{value}\r"
-    end |> Enum.sort |> Enum.reverse |> Enum.join("\n")
+    end
+    |> Enum.sort()
+    |> Enum.reverse()
+    |> Enum.join("\n")
   end
 
   def put_content_length(%Conv{} = conv) do
     put_in(conv.resp_headers["Content-Length"], byte_size(conv.resp_body))
-    #new_headers = Map.put(conv.resp_headers, "Content-Length", byte_size(conv.resp_body))
-    #%{ conv | resp_headers: new_headers}
+    # new_headers = Map.put(conv.resp_headers, "Content-Length", byte_size(conv.resp_body))
+    # %{ conv | resp_headers: new_headers}
   end
-
 end
-

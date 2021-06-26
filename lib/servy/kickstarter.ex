@@ -9,7 +9,7 @@ defmodule Servy.KickStarter do
   end
 
   def start_link(_arg) do
-    Logger.info "Start the kickstarter..."
+    Logger.info("Start the kickstarter...")
     GenServer.start_link(__MODULE__, :ok, name: @name)
   end
 
@@ -30,17 +30,15 @@ defmodule Servy.KickStarter do
   end
 
   def handle_info({:EXIT, _pid, reason}, _state) do
-    Logger.error "HttpServer died (#{inspect reason})"
+    Logger.error("HttpServer died (#{inspect(reason)})")
     {:noreply, %State{http_server: start_server()}}
   end
 
   defp start_server do
-    Logger.info "Start the HTTP server..."
+    Logger.info("Start the HTTP server...")
     port = Application.get_env(:servy, :port)
     http_server = spawn_link(Servy.HttpServer, :start, [port])
 
     http_server
   end
-
 end
-

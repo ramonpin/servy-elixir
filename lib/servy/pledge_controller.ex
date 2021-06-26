@@ -1,5 +1,4 @@
 defmodule Servy.PledgeController do
-
   alias Servy.PledgeServer
 
   import Servy.View, only: [render: 4, render: 3]
@@ -24,8 +23,6 @@ defmodule Servy.PledgeController do
   def total_pledged(conv) do
     total = PledgeServer.total_pledged()
 
-    %{ conv | status: 200, resp_body: "Total Pledged: #{total}" }
+    %{conv | status: 200, resp_body: "Total Pledged: #{total}"}
   end
-
 end
-

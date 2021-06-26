@@ -1,5 +1,4 @@
 defmodule Servy.HttpServer do
-
   require Logger
 
   @doc """
@@ -9,7 +8,7 @@ defmodule Servy.HttpServer do
     {:ok, listen_socket} =
       :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
 
-    log_info "Listening for connection requests on port #{port}..."
+    log_info("Listening for connection requests on port #{port}...")
 
     accept_loop(listen_socket)
   end
@@ -18,10 +17,10 @@ defmodule Servy.HttpServer do
   Accepts client connections on the `listen_socket`.
   """
   def accept_loop(listen_socket) do
-    log_info "Waiting to accept a client connection..."
+    log_info("Waiting to accept a client connection...")
     {:ok, client_socket} = :gen_tcp.accept(listen_socket)
 
-    log_info "Connection accepted!"
+    log_info("Connection accepted!")
     pid = spawn(__MODULE__, :serve, [client_socket])
 
     # Transfer ownership of the socket to the spawned process
@@ -38,7 +37,7 @@ defmodule Servy.HttpServer do
   def serve(client_socket) do
     client_socket
     |> read_request
-    |> Servy.Handler.handle
+    |> Servy.Handler.handle()
     |> write_response(client_socket)
   end
 
@@ -46,13 +45,14 @@ defmodule Servy.HttpServer do
   Recieves a request on the `client_socket`.
   """
   def read_request(client_socket) do
-    {:ok, request} = :gen_tcp.recv(client_socket, 0) # all available bytes
+    # all available bytes
+    {:ok, request} = :gen_tcp.recv(client_socket, 0)
 
-    log_info """
+    log_info("""
     Recieved request:
     #{request}
     --------------------------------
-    """
+    """)
 
     request
   end
@@ -76,18 +76,16 @@ defmodule Servy.HttpServer do
   def write_response(response, client_socket) do
     :ok = :gen_tcp.send(client_socket, response)
 
-    log_info """
+    log_info("""
     Sent response:
     #{response}
     --------------------------------
-    """
+    """)
 
     :gen_tcp.close(client_socket)
   end
 
   defp log_info(msg) do
-    if Mix.env != :test, do: Logger.info(msg)
+    if Mix.env() != :test, do: Logger.info(msg)
   end
-
 end
-

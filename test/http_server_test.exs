@@ -20,5 +20,4 @@ defmodule HttpServerTest do
     |> Enum.map(&Task.await/1)
     |> Enum.each(&assert_correct_response(&1, response_body))
   end
-
 end
