@@ -14,7 +14,7 @@ defmodule Servy.SensorServer do
   def start_link(_arg, randomized \\ true) do
     Logger.info("Starting SensorServer...")
 
-    unless Mix.env() == :test do
+    unless Application.fetch_env!(:servy, :env) == :test do
       GenServer.start_link(__MODULE__, randomized, name: @name)
     else
       GenServer.start_link(__MODULE__, false, name: @name)

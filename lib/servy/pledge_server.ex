@@ -37,7 +37,7 @@ defmodule Servy.PledgeServer do
   # GENSERVER CALLBACKS
   # ----------------------
   def init(args) do
-    case Mix.env() do
+    case Application.fetch_env!(:servy, :env) do
       :test ->
         # We do not want to retrieve recent pledges from
         # external server while in test

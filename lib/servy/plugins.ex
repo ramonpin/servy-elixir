@@ -6,7 +6,7 @@ defmodule Servy.Plugins do
 
   @doc "Logs actual state of the conversantion."
   def log(%Conv{} = conv) do
-    if Mix.env() == :dev do
+    if Application.fetch_env!(:servy, :env) == :dev do
       Logger.info(inspect(conv))
     end
 

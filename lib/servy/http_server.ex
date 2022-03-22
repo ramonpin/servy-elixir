@@ -86,6 +86,6 @@ defmodule Servy.HttpServer do
   end
 
   defp log_info(msg) do
-    if Mix.env() != :test, do: Logger.info(msg)
+    if Application.fetch_env!(:servy, :env) != :test, do: Logger.info(msg)
   end
 end
